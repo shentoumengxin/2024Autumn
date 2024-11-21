@@ -740,7 +740,7 @@ Binary Tree: Complete Binary Tree
 
   26 12 32 4 18 14 24(use queue to utilize)
 
-* Preorder traversal
+* Preorder traversal 深度优先
 
   root , left , right
 
