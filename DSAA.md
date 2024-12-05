@@ -1,5 +1,16 @@
 # <b>DSAA</b>
 
+## My viewpoints
+
+递归关键的理解是递归树和栈。
+
+在递归函数后面的内容会被压入栈中，从return开始对代码从深度上往上一层一层向上执行。而调用递归函数的前面的部分是从上向下执行的，
+
+总结来说，正确的理解是：
+
+- 在递归调用时，栈顶的函数调用会“等待”递归调用返回后才会继续执行。即**继承**上一函数的状态。
+- 递归函数调用前的代码是按“自上而下”的顺序执行的，递归函数调用后的代码则按“自下而上”的顺序执行（即从最深的递归返回并逐层向上执行）。
+
 ## Binary Search
 
 二分查找最关键的是确定边界条件！要想清楚遇到相同的被查找的数和相邻时应该怎么处理
@@ -546,7 +557,7 @@ else // char mismatch
  X ← 𝛿(X,P[j]) 
 ```
 
-- 这里，`X ← 𝛿(X, P[j+1])` 表示更新 `X` 为当前状态 `X` 在接收到模式串 `P[j]` 时的转移状态。这是为了在下一次处理字符时，能够继续参考之前已经匹配的部分。
+- 这里，`X ← 𝛿(X, P[j+1])` 表示更新 `X` 为当前状态 `X` 在接收到模式串 `P[j]` 时的转移状态。这是为了在下一次处理字符时，能够继续参考之前已经匹配的部分。**(这里一定注意X是延后更新的，差行复制)**
 
 **步骤 4：返回转移函数**
 
@@ -678,13 +689,13 @@ Consider a tree `T` . Let `u` and `v` be two nodes in T. let u and v be two node
 
 **计算内部节点数**：
 
-内部节点数=⌈N−1K⌉=N−1+K−1K\text{内部节点数} = \left\lceil \frac{N-1}{K} \right\rceil = \frac{N-1 + K - 1}{K}内部节点数=⌈KN−1⌉=KN−1+K−1
+$\text{内部节点数} = \left\lceil \frac{N-1}{K} \right\rceil = \frac{N-1 + K - 1}{K}$
 
 使用整数运算实现向上取整。
 
 **计算叶子节点数**：
 
-叶子节点数=N−内部节点数\text{叶子节点数} = N - \text{内部节点数}叶子节点数=N−内部节点数
+$\text{叶子节点数} = N - \text{内部节点数}$
 
 **Tree Property II**
 
@@ -730,17 +741,19 @@ Binary Tree: Complete Binary Tree
 
 #### Traversal
 
-![image-20241119120509912](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241119120509912.png)
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241119120509912.png" alt="image-20241119120509912" style="zoom:60%;" />
 
 
 
 
 
-* level traversal:
+* level traversal:   广度优先搜索
 
-  26 12 32 4 18 14 24(use queue to utilize)
+  top to bottom left to right
 
-* Preorder traversal 深度优先
+  26 12 32 4 18 14 24  (use queue to utilize)
+
+* Preorder traversal 
 
   root , left , right
 
@@ -760,13 +773,13 @@ Binary Tree: Complete Binary Tree
 
 We can rebuild this tree by these traversal.
 
-Preorder Traversal
+**Preorder Traversal**
 
   Implementation: 
 
  Recursive Implementation? So easy? 
 
-```
+```c
 preorderprint(treeNode root): 
  print(root) 
  if(root->left!=null) 
@@ -775,7 +788,7 @@ preorderprint(treeNode root):
  	preorderprint(root->right)
 ```
 
-```
+```c
 preorderiterative(treeNode root):
  treeNode stack s
  s.push(root)
@@ -787,8 +800,368 @@ preorderiterative(treeNode root):
  s.push(node->right)
  if(node->left!=null)
  s.push(node->left)
+//切换pop，左右的位置关系可以实现不同traversal!!
+```
 
+**Postorder traversal**
+
+**逻辑：**
+
+- 第一个栈用于按 "根 -> 右 -> 左" 顺序遍历节点。
+- 第二个栈用于存储逆序的遍历结果，最终直接逆序输出即为后序结果。
+
+```plaintext
+postorderTraversalTwoStack(root):
+    if root is null:
+        return []
+
+    stack1 = []  # 用于遍历
+    stack2 = []  # 用于存储结果
+    result = []
+    stack1.push(root)
+    while stack1 is not empty:
+        node = stack1.pop()
+        stack2.push(node)
+        # 左子树先入栈，保证右子树先处理
+        if node.left is not null:
+            stack1.push(node.left)
+        if node.right is not null:
+            stack1.push(node.right)
+    # 从stack2依次输出后序结果
+    while stack2 is not empty:
+        result.append(stack2.pop().value)
+
+    return result
+```
+
+----
+
+
+
+### Caculater
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241126105701267.png" alt="image-20241126105701267" style="zoom:60%;" />
+
+Postorder 的实现类似于栈实现计算器，把左边叶子push进去，父节点运算后把结果压入栈。
+
+### Character Encoding
+
+**Fixed encoding**
+
+ A character encoding maps each character to a  number 
+
+ Computers usually use fixed-length character  encodings 
+
+ ASCII uses 8 bits per character   Unicode uses 16 bits per character 
+
+  All character encodings have the same length 
+
+ A given character always has the same encoding
+
+  Problem: fixed length encoding waste space  Solution: a variable-length encoding
+
+**Huffman tree**
+
+1. use encodings of different lengths for different characters.
+2. Assign shorter encodings to frequently occurring characters
+3. **Requirement**: no character’s encoding can be the **prefix **of another character’s encoding (e.g., couldn’t  have 00 and 001)     防止区分不清
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241126112921820.png" alt="image-20241126112921820" style="zoom:50%;" />
+
+### **哈夫曼树的构建步骤**
+
+1. **统计字符频率**：
+   - 从文本中读取字符并统计每个字符的出现频率。
+2. **创建初始节点列表**：
+   - 为每个字符创建一个节点，节点中包含该字符及其频率。
+   - 这些节点将用于构建哈夫曼树。
+3. **合并最低频率的两个节点**：
+   - 从节点列表中找出**频率最低的两个节点**。
+   - 将它们合并为一个新节点，该节点的频率是两个子节点频率之和。
+   - 新节点的左右子节点分别是刚刚合并的两个节点。
+4. **将新节点加入节点列表**：
+   - 将新合并的父节点添加回节点列表中，继续构建。
+5. **重复合并直到只剩一个节点**：
+   - 不断重复**步骤3**和**步骤4**，直到列表中只剩一个节点。
+   - 最终剩下的节点即为哈夫曼树的根节点。
+
+------
+
+### **示例：构建哈夫曼树**
+
+给定一组字符和其对应频率：
+
+| 字符 | Z    | K    | F    | C    | U    | D    | L    | E    |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| 频率 | 2    | 7    | 10   | 12   | 27   | 30   | 43   | 65   |
+
+#### 步骤示例：
+
+1. **初始状态**：
+   - 将所有字符和频率作为独立节点加入节点列表。
+2. **第一次合并**：
+   - 频率最小的两个节点为 `Z (2)` 和 `K (7)`。
+   - 合并为新节点，频率为 `2 + 7 = 9`。
+   - 新节点加入列表中，剩余节点频率为： `9, 10, 12, 27, 30, 43, 65`。
+3. **第二次合并**：
+   - 频率最小的两个节点为 `9` 和 `F (10)`。
+   - 合并为新节点，频率为 `9 + 10 = 19`。
+   - 新节点加入列表中，剩余节点频率为： `19, 12, 27, 30, 43, 65`。
+4. **重复以上步骤**：
+   - 继续合并频率最小的两个节点，直到最后剩下一个节点为根节点。
+
+----
+
+**构建哈夫曼树的关键点**
+
+- 每次合并都保证选择频率最小的两个节点。
+- 合并过程可以用优先队列（最小堆）优化，以高效选择最小频率的节点。
+- 哈夫曼树用于编码字符时，**左分支表示 0，右分支表示 1**。
+
+
+
+## Advanced Tree
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241126114841634.png" alt="image-20241126114841634" style="zoom:40%;" />
+
+### Binary Heap
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241126114644236.png" alt="image-20241126114644236" style="zoom:45%;" />
+
+**完全树，节点有唯一值，每一个中间节点都比他的孩子小**
+
+
+
+**Insert Node** O(log n)
+
+插入操作主要包括两部分：
+
+1. **在树的底部按顺序插入新节点**（保持完全二叉树的性质）。
+2. **调整堆序**（通过上浮操作修复堆序性质）。
+
+伪代码如下：
+
+**步骤 1：在树的底部插入节点**
+
+- 创建一个新节点 `z`，值为 `e`。
+- 将 `z` 插入到二叉堆中唯一可能的位置，确保树仍然是**完全二叉树**。
+
+**步骤 2：上浮操作（Heapify-Up）**
+
+1. 初始化指针 `u` 指向新插入的节点 `z`。
+
+2. 如果 `u` 是根节点，停止操作（堆序性质已满足）。
+
+3. 否则，比较 
+
+   ```
+   u
+   ```
+
+    的值与其父节点 
+
+   ```
+   p
+   ```
+
+    的值：
+
+   - 如果 `u.key >= p.key`（最小堆）或 `u.key <= p.key`（最大堆），或者已经到了顶堆。
+   - 停止操作，堆序已满足。
+   - 否则，交换 `u` 和 `p` 的值。
+
+4. 将 `u` 更新为 `p`，重复上述步骤，直到堆序恢复或到达根节点。
+
+
+
+ **删除最小值的操作步骤**
+
+1. 删除堆中最小的元素（根节点）。
+2. 用堆中最后一个叶节点的值替换根节点。
+3. 自上而下（从根到叶）调整堆序（下沉操作，Heapify-Down），使堆重新满足最小堆的性质。
+
+**详细步骤：**
+
+1. **报告根节点的值**：
+
+   - 因为根节点是堆中的最小值，直接将其输出。
+
+2. **找到底部的最后一个节点**：
+
+   - 找到堆中**最后一个节点**（右下角叶子），它是底层最右侧的节点。
+
+3. **删除最后一个节点，将其值放到根节点**：
+
+   - 删除最后一个节点 `z`，将其值替换到根节点的位置。
+
+4. **开始调整堆序（下沉操作，Heapify-Down）：**
+
+   - 如果当前节点 `u` 是叶节点，停止调整（堆已满足性质）。
+
+   - 否则，检查 
+
+     ```
+     u
+     ```
+
+      的两个子节点：
+
+     - 如果 `u` 的值小于两个子节点，堆序已满足，停止操作。
+     - 否则，与值较小的子节点交换位置。
+
+   - 将指针 `u` 更新为交换后的子节点，重复调整，直到堆序满足.
+
+   **如何找第n大的数，把n转换为二进制数，然后根据0左1右就可以找到这个数**
+
+   <img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241126121344645.png" alt="image-20241126121344645" style="zoom:50%;" />
+
+
+
+
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241126121423113.png" alt="image-20241126121423113" style="zoom:50%;" />
+
+
+
+* **完全二叉树的数组表示：**
+
+  - 树的根节点 `u` 存储在 `A[1]` 位置。
+
+  - 对于任何存储在 `A[i]` 的节点 `u`，它的 **左子节点** 存储在 `A[2i]` 位置。
+
+  - 它的 **右子节点** 存储在 `A[2i + 1]` 位置。
+
+* **为什么左子节点在 `A[2i]`：**
+
+  - 完全二叉树的节点是按层次顺序存储的，也就是说，节点按从上到下、从左到右的顺序排列。
+
+  - 如果节点 `u` 存储在位置 `i`，那么在 `u` 前面已经有 `i-1` 个节点。
+
+  - `u` 的左子节点是 `u` 的左子树的根节点，并且它一定位于 `u` 之后的第一个位置。由于完全二叉树的结构，左子节点的索引应该是 `2i`。
+
+* **为什么右子节点在 `A[2i+1]`：**
+
+  - 同理，右子节点在左子节点之后，也就是存储在 `A[2i+1]`。
+
+  - 这样，数组中的节点可以按层次顺序，依次存储每个节点及其子树。
+
+  
+
+  **The following is an immediate corollary of the previous  lemma: **
+
+  **推论**：假设二叉树 `T` 中的节点 `u` 存储在数组 `A[i]` 位置，那么节点 `u` 的**父节点**存储在数组 `A[i//2]` 位置。(向下取整)
+
+  **引理**：在完全二叉树中，最底层最右边的叶子节点存储在数组 `A[n]` 位置，其中 `n` 是树中的总节点数。
+
+  由这几个定理，运用数组进行建堆
+
+  <img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203110237736.png" alt="image-20241203110237736" style="zoom:50%;" />
+
+  <img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203110349170.png" alt="image-20241203110349170" style="zoom:50%;" />
+
+Create an array A that stores a set S of n integers, we  can turn A into a  **binary heap** on S using the  following simple algorithm, which view A as a  complete binary tree T:
+
+```
+ For each i=n downto 1: 
+ 	 Perform root-fix on the subtree of T rooted at A[i]
 ```
 
 
 
+ <img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203113137620.png" alt="image-20241203113137620" style="zoom:50%;" />
+
+
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203113200668.png" alt="image-20241203113200668" style="zoom:50%;" />
+
+错位相减法，可以证明复杂度是线性。
+
+### BST
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203114356052.png" alt="image-20241203114356052" style="zoom:50%;" />
+
+Predecessor Query , Successor Query time complexity: **O(h)** h be the height of this tree
+
+Insertion and delete: **O(n)**
+
+#### 前驱查询（Predecessor Query）
+
+在一个二叉搜索树（BST）上，给定一个整数集 `S` 和一个查询值 `q`，我们要找到 `q` 的 **前驱节点**（predecessor）。前驱节点是树中 **小于 `q` 的最大节点**。
+
+例如，如果二叉搜索树的节点是 `[20, 10, 30, 5, 15, 25, 35]`，那么对于查询 `q = 15`，前驱节点应该是 `10`，因为 `10` 是小于 `15` 的最大值。
+
+**算法步骤**
+
+1. **初始化前驱节点**：
+   - 设定 `p = -∞`，即初始的前驱值为一个无穷小的值，表示还没有找到前驱。
+2. **从根节点开始遍历**：
+   - 设定 `u` 为树的根节点。
+3. **判断当前节点**：
+   - **如果 `u` 为 `nil`**（即当前节点为空），则表示查询结束，返回当前的前驱 `p`。
+   - **如果 `u` 的值等于 `q`**，则直接将前驱 `p` 设置为 `q`，并返回 `p`。
+   - **如果 `u` 的值大于 `q`**，那么说明 `q` 应该在左子树中。将 `u` 设置为 `u` 的左子节点，继续向左子树遍历。
+   - **否则，`u` 的值小于 `q`**，此时我们可以更新前驱节点 `p` 为 `u` 的值，因为此时 `u` 小于 `q`，并且是目前为止最接近 `q` 的一个节点。然后将 `u` 设置为 `u` 的右子节点，继续向右子树遍历。
+4. **终止条件**：
+   - 当遍历到空节点（`nil`）时，返回当前的前驱值 `p`。
+
+```
+function predecessorQuery(T, q):
+    p ← -∞  // 初始前驱节点值
+    u ← root of T  // 从根节点开始遍历
+
+    while u ≠ nil:
+        if u.key = q:
+            p ← q  // 如果当前节点的值等于 q，则前驱就是 q
+            return p
+        else if u.key > q:
+            u ← left child of u  // 如果当前节点的值大于 q，则去左子树查找
+        else:
+            p ← u.key  // 当前节点值小于 q，更新前驱为当前节点
+            u ← right child of u  // 继续向右子树查找
+
+    return p  // 最终返回前驱
+```
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203120020635.png" alt="image-20241203120020635" style="zoom:33%;" />
+
+在二叉搜索树（BST）中，**后继（Successor）** 和 **前驱（Predecessor）** 是相反的概念：
+
+- **后继节点**：给定一个整数 `q`，它的后继是 BST 中 **最小的** 大于或等于 `q` 的节点。如果 `q` 的值存在于树中，则后继就是 `q` 本身，否则是大于 `q` 的最小值。
+- 如果没有比 `q` 更大的元素，则后继不存在。
+
+#### 后继查询（Successor）
+
+假设集合 `S = {3, 10, 15, 20, 30, 40, 60, 73, 80}`，对于查询 `q` 的后继，返回如下：
+
+- **`q = 23`** 的后继是 **`30`**，因为 30 是大于 23 的最小值。
+- **`q = 15`** 的后继是 **`15`**，因为 15 本身就是集合中等于 `15` 的最小值。
+- **`q = 81`** 的后继不存在，因为没有比 81 更大的元素。
+- 
+
+我们可以通过在二叉搜索树（BST）中遍历来找到后继。后继查询的算法与前驱查询的算法是对称的。即根据 BST 的性质，后继查询可以按照以下规则进行：
+
+1. **初始化**：我们从根节点开始遍历 BST，使用一个变量 `p` 来保存当前找到的后继节点。
+2. 遍历:
+   - 如果当前节点 `u` 的值等于 `q`，那么 `q` 的后继就是 `u`（即当前节点）。
+   - 如果当前节点 `u` 的值大于 `q`，那么 `u` 可能是 `q` 的后继，但我们需要继续向左子树遍历，看看是否能找到更小的后继值。
+   - 如果当前节点 `u` 的值小于 `q`，那么我们需要继续向右子树遍历，因为后继节点一定在右子树中。
+
+#### Insert
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203120145623.png" alt="image-20241203120145623" style="zoom:50%;" />
+
+找到合适的位置插入
+
+#### Deletion
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203120339523.png" alt="image-20241203120339523" style="zoom:40%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241203120411889.png" alt="image-20241203120411889" style="zoom:50%;" />
+
+2.2：因为如果有左孩子，successor就是他，所以一定只有右孩子。
+
+把右子树的根节点直接覆盖掉交换后的v（被赋值为要删除的successor node)
+
+3: 他一定是一个中间节点，有左子树，直接把做子树的根覆盖掉v。即直接用左子树替换它
+
+复杂度分析：case2 是O(n). case1 and case3 
