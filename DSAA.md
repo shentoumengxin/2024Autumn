@@ -1165,3 +1165,355 @@ function predecessorQuery(T, q):
 3: 他一定是一个中间节点，有左子树，直接把做子树的根覆盖掉v。即直接用左子树替换它
 
 复杂度分析：case2 是O(n). case1 and case3 
+
+## Graph
+
+### Definition 
+
+* Vertex (node) $v$, Edge($e$) 
+
+* Undirected Graph Directed Graph
+* **Path**: Let G = (V, E) be a graph. A path in G is a sequence of  nodes (𝑣1, 𝑣2, … , 𝑣𝑘) such that
+  *   For every 𝑖 ∈ [1, 𝑘 − 1], there is an edge between 𝑣𝑖 and 𝑣𝑖+1
+  * **Cycle**:  A cycle in G is a trail in which the only repeated vertices  are the first and last vertices.
+
+* **Degree**  
+  * In an undirected graph, the degree of vertex u is the  number of edges of u (2e)
+  *   In a directed graph, the out-degree of a vertex u is the  number of outgoing edges of u, and its in-degree is the  number of its incoming edges (e) (e)
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217104323178.png" alt="image-20241217104323178" style="zoom:50%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217104732675.png" alt="image-20241217104732675" style="zoom:50%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217110033472.png" alt="image-20241217110033472" style="zoom:45%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217110458531.png" alt="image-20241217110458531" style="zoom:45%;" />
+
+### Single Source Shortest Path (SSSP)
+
+单源最短路径问题，并介绍了如何通过广度优先搜索（BFS）算法解决这一问题，确保算法在单位边权的图中能够以最优的时间复杂度 O(∣V∣+∣E∣) 运行。
+
+1. **问题定义：**
+
+   - 给定一个有向图 G=(V,E)，其中 V 是顶点集合，E 是边集合。
+   - 图中每条边的权重都是单位权重（即每条边的代价为 1）。
+   - 我们的目标是从给定的源顶点 $s \in V$ 出发，找到从 s 到每个其他顶点 $t \in V \setminus \{s\}$ 的最短路径。
+   - 如果某个顶点 t 无法从源顶点 s 到达，我们应当表示它不可达。
+
+2. **最优性：**
+
+   - 这里描述的算法是 **广度优先搜索（BFS）**，它通过逐层遍历图来探索各个顶点。
+
+   - 由于每条边的权重相同（单位权重），BFS 能确保按照边的数量最少的路径找到源顶点到目标顶点的最短路径。
+
+   - BFS 的时间复杂度是 O(∣V∣+∣E∣)
+
+     ，其中：
+
+     - ∣V∣ 是顶点的数量。
+     - ∣E∣∣ 是边的数量。
+
+   - 这个时间复杂度是最优的，因为任何算法在最坏情况下至少需要遍历每个顶点和每条边一次，才能保证找到所有可能的路径。
+
+3. **BFS 算法：**
+
+   - BFS 从源顶点 s 开始，按层次（即从源顶点开始，逐渐扩展到与源顶点距离更远的顶点）探索所有可达顶点。
+   - 它使用队列来保持待探索的顶点，确保顶点按层次顺序被遍历。
+   - BFS 保证了当某个顶点 ttt 被首次访问时，从源顶点 s 到 t 的路径一定是最短的路径，因为 BFS 按照顶点到源顶点的距离逐层处理顶点。
+
+### 广度优先搜索（BFS）算法步骤：
+
+1. **初始化：**
+   - **将所有顶点涂白**：开始时，将图中的所有顶点的颜色设为 **白色**，表示这些顶点还未被访问过。
+   - **创建一个空的 BFS 树 T**：这个树将用于记录广度优先搜索过程中访问的顶点及其连接关系。
+2. **创建队列 Q：**
+   - **插入源顶点 s**：将源顶点 sss 插入队列 QQQ，并将它的颜色改为 **黄色**，表示该顶点已经被放入队列，等待进一步探索。
+   - 黄色表示顶点已经被访问过，但尚未完全遍历它的所有邻居。
+3. **将源顶点作为树的根：**
+   - **将顶点 s 作为 BFS 树 T 的根**：此时，源顶点 sss 是 BFS 树的起点，它的父节点为空。
+
+
+
+- 之后，BFS 会按照以下流程继续执行：
+  1. **从队列中取出顶点**：每次从队列 Q中取出一个顶点，并将其标记为已访问（即更改颜色为“绿色”），表示它已被完全探索。
+  2. **访问其邻居**：对于从队列中取出的每个顶点，检查它的所有邻居(出度）。如果邻居是白色的（表示未被访问），就将它们插入队列，并将它们的颜色改为黄色（表示它们已在队列中等待探索），同时更新 BFS 树的结构，记录该邻居的父节点。
+  3. **重复以上步骤**，直到队列为空，表示图中所有可达的顶点都已被访问。
+
+- **白色**：顶点尚未被访问。
+- **黄色**：顶点已被加入队列，但还没有被完全探索。
+- **绿色**：顶点已经被探索完毕，即已经访问了它的所有邻居。
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217113210209.png" alt="image-20241217113210209" style="zoom:50%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217113420611.png" alt="image-20241217113420611" style="zoom:45%;" />
+
+### **深度优先搜索（DFS）**。
+
+与 BFS 不同，DFS 是一种通过尽可能深入探索每个分支来遍历图的算法。DFS 具有非常强大的能力，能够解决多个经典问题，今天我们将重点讨论如何利用 DFS 检测图中是否存在 **环（cycle）**。
+
+路径（Path）
+
+在一个有向图 $G = (V, E)$中，路径是由一系列节点构成的序列：
+
+$(v_1, v_2, \dots, v_k)$
+
+满足以下条件：
+
+- 对于每个$i \in [1, k-1]$，存在一条边连接 $v_i$到 $v_{i+1}$，即 $(v_i, v_{i+1}) \in E$
+- 例如，路径可以表示为：$v_1 \rightarrow v_2 \rightarrow \dots \rightarrow v_k$。
+
+环（Cycle）
+
+在图中，环是一种特殊的路径，它满足以下条件：
+
+- $k \geq 4$，即路径长度大于等于 4。
+- v$v_1 = v_k$，即路径的起点与终点相同，形成闭环。
+
+例如，图中包含以下路径的情况下，我们称之为环：
+
+$(v_1, v_2, v_3, v_4, v_1)$
+
+这表示节点 v1 到 v2，再到 v3，然后到 v4，最后回到 v1，形成一个闭环。
+
+
+
+**DFS** 可以用来检测图中是否存在环。我们使用 **递归回溯** 来实现 DFS，每次递归访问一个节点时，检查是否能回到之前访问过的节点。
+
+**DFS 环检测的关键思想：**
+
+- **状态跟踪：** 我们使用三种状态来跟踪每个节点的访问状态：
+  - **未访问（WHITE）**：节点尚未被访问。
+  - **正在访问（GRAY）**：节点在当前 DFS 栈中，意味着该节点正在被探索。
+  - **已访问（BLACK）**：节点已被完全探索，且没有环。
+- **环的检测：** 如果在 DFS 过程中，某个节点在当前递归栈中再次被访问到（即状态为 **GRAY**），则说明找到了一个环。
+
+**内部步骤：**
+
+1. 初始化每个节点的状态为 **未访问（WHITE）**。
+2. 对每个节点进行 DFS 探索：
+   - 如果当前节点的状态是 **未访问（WHITE）**，则执行 DFS 探索。
+   - 在 DFS 探索过程中，标记节点为 **正在访问（GRAY）**。
+   - 如果访问到一个 **正在访问（GRAY）** 的节点，说明存在环。
+   - 如果节点的所有邻居都被探索完毕，标记节点为 **已访问（BLACK）**。
+3. 如果 DFS 结束后没有发现环，则图中无环。
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217120319326.png" alt="image-20241217120319326" style="zoom:50%;" />
+
+**Time Complexity**
+
+DFS can be implemented efficiently as follows.
+
+  Store G in the adjacency list format
+
+  For every vertex v, remember the out-neighbor to explore  next  O(|V|+|E|) stack operations  Use an array to remember the colors of all vertices  Hence, **the total running time is O(|V|+|E|)**
+
+
+
+**DFS 树（森林）**
+
+- **DFS 树（DFS Tree）**：在进行 DFS 遍历时，所生成的树叫做 DFS 树。它表示了从起始节点出发，通过 DFS 访问到其他节点的顺序和路径结构。
+- **DFS 森林（DFS Forest）**：如果图是一个非连通图，那么它可能包含多个子图。在这种情况下，DFS 将生成一个 **DFS 森林**，即由多个 DFS 树构成的集合。
+
+**边的分类**
+
+在 DFS 树的构建过程中，我们不仅会访问图中的节点，还会处理图中的边。对于图中的每一条边 (u,v)(u, v)(u,v)，我们可以根据其在 DFS 中的行为将其分类为以下几种类型：
+
+1. **前向边（Forward Edge）**：
+   - 定义：如果u 是 v 在 DFS 树中的**祖先**（但不是父节点），则边 (u,v) 是 **前向边**。
+   - 解释：即 u 已经是 v 的某个祖先，而不是直接的父节点。这类边通常出现在 DFS 树的深度优先遍历中，用于连接树中更深层次的节点。
+2. **回边（Backward Edge）**：
+   - 定义：如果 u 是 v 的**后代**（即 v 是 u 的祖先），则边 (u,v)是 **回边**。
+   - 解释：回边指向树中的祖先节点，这种边通常用于检测图中的 **环**。如果存在回边，则图中存在环，因为回边表示我们从一个节点走到了其祖先节点。
+3. **横向边（Cross Edge）**：
+   - 定义：如果边 (u,v) 既不是前向边，也不是回边，则它是 **横向边**。
+   - 解释：横向边连接的是不同 DFS 树中的节点，或者在同一树中属于不同子树的节点。
+
+如何判断每种边的类型？
+
+1. **DFS 树的构建**：通过 DFS 进行遍历，节点的状态（未访问、正在访问、已访问）将帮助我们判断边的类型。
+   - **前向边**：当我们在 DFS 中遇到一个已经访问过的节点，并且这个节点是当前节点的祖先时，即为前向边。
+   - **回边**：当我们遇到一个正在访问（即处于递归栈中的）节点时，这条边是回边。
+   - **横向边**：当我们遇到一个已经完全访问过的节点，并且该节点不在当前树的子树中时，这就是横向边。
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217121223431.png" alt="image-20241217121223431" style="zoom:50%;" />
+
+**增强的 DFS：时间戳**
+
+为了判定每条边 (u,v) 的类型，我们需要记录每个节点的 **发现时间** 和 **结束时间**。每当 DFS 在栈上“推入”或“弹出”一个节点时，我们会为该节点分配一个唯一的时间戳。这使得我们可以在常数时间内判断每条边的类型。
+
+**边的分类规则：**
+
+基于发现时间和结束时间，我们可以对图中的每条边 (u,v) 进行分类：
+
+- **树边（Tree Edge）**：当节点 v 尚未被访问，并且它是节点 u 的子节点时，即$d\_time(u) < d\_time(v) < f\_time(u)$，边 (u,v) 是树边。
+- **回边（Back Edge）**：如果节点 v 在 DFS 过程中处于栈中（即它还未结束），并且 v 是 u 的祖先，则边 (u,v) 是回边。这可以通过判断$d\_time(v) < d\_time(u) < f\_time(v)$来实现。
+- **前向边（Forward Edge）**：如果 v 已被访问，并且 u 是 v 的祖先，但不是直接的父节点，那么边 (u,v)是前向边。即 $d\_time(u) < d\_time(v) < f\_time(v)$，且 u 是 v 的一个祖先节点。
+- **横向边（Cross Edge）**：如果边 (u,v)(u, v)(u,v) 连接的是两个不同的 DFS 树，或者它连接的是同一 DFS 树中的不同子树，那么这就是横向边。判断标准是$f\_time(u) < d\_time(v)$ 或 $f\_time(v) < d\_time(u)$。
+
+### Topological Sort on a DAG
+
+Topological Sort Algorithm
+
+* Create an empty list L
+
+* Run DFS on G, whenever a vertex v turns red (i.e., it is popped from the stack), append it to L.
+
+* Output the reverse order of L
+
+* The total running time is clearly O(|V|+|E|)
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241224140758253.png" alt="image-20241224140758253" style="zoom:50%;" />
+
+我们通过深度优先搜索（DFS）来构造拓扑排序，并通过证明“在 DFS 过程中，顶点的完成时间顺序可以得到一个拓扑排序”来证明正确性。
+
+1. **DFS 和顶点状态**： 在 DFS 遍历过程中，每个顶点有以下三种状态：
+   - **白色（White）**：该顶点尚未被访问。
+   - **灰色（Gray）**：该顶点正在被访问，即它在当前的递归栈中。
+   - **红色（Red）**：该顶点已经被完全访问，所有从该顶点可达的顶点也都已经访问过了。
+2. **关键点 - 为什么 u 会在 v 之后变为红色？** 证明的关键是，若存在一条边 (u,v)，那么在 DFS 中，u 会在 v 完成（即变成红色）之后变为红色。我们从以下几种情况来考虑：
+   - **情况 1**：假设 u 在 DFS 过程中被访问时，v 仍然是白色（未被访问）。根据 DFS 的性质，若 v 是白色，则 v 会成为 u 的“后代”节点，即 u 会先被访问，然后 v 会作为 u 的子树继续被遍历。这样 u 必定会在 v 之前变为红色。
+   - **情况 2**：假设 v 已经变成红色。在这种情况下，u 必然会在 v 完成之后变为红色，因为 v 已经没有任何后续的子树需要访问。
+   - **情况 3**：如果 v 当前在栈中是灰色的，那么显然图中存在一个从 v 到 u 的路径，这将形成一个环，违背了图是 DAG 的假设。因此，v 不会在栈中，而一定是红色的，u 会在 v 之后变为红色。
+3. **DAG 必有拓扑排序**： 通过上述分析，我们可以知道，所有的有向边 (u,v) 在 DFS 完成之后，u 一定会排在 v 的前面。这保证了拓扑排序的存在性。
+
+
+
+
+
+### Shortest Path (SSP)
+
+考虑一个有向加权图 $G = (V, E)$，其中：
+- $V$ 是顶点集，
+- $E$ 是边集，
+- $w$ 是权重函数，为每条边 $(u, v) \in E$ 分配一个正的权重值。
+
+一个 **路径** 是由一系列边组成的顶点序列 $(v_1, v_2), (v_2, v_3), \dots, (v_l, v_{l+1})$，其中 $l \geq 1$。这个路径的 **长度** 定义为沿路径所有边的权重之和：
+
+$$
+\text{路径长度} (v_1, v_2, \dots, v_{l+1}) = \sum_{i=1}^{l} w(v_i, v_{i+1}).
+$$
+
+给定两个顶点 $u$ 和 $v \in V$，**从 $u$ 到 $v$ 的最短路径**是从 $u$ 到 $v$ 的所有路径中，具有最小总长度的路径。
+
+- 如果 $v$ 从 $u$ 是不可达的，那么从 $u$ 到 $v$ 的最短路径距离为 $\infty$。
+
+---
+
+### 单源最短路径（SSSP）问题：正权重图
+
+**单源最短路径（SSSP）问题**旨在找出从某个源顶点 $s$ 到所有其他顶点的最短路径。
+
+#### 问题陈述：
+- 给定一个有向加权图 $G = (V, E)$，其中权重函数 $w$ 为每条边分配 **正权重**。
+- 给定一个源顶点 $s \in V$，SSSP问题的目标是为每个其他顶点 $t \in V \setminus \{s\}$ 找到从 $s$ 到 $t$ 的最短路径，除非 $t$ 从 $s$ 是不可达的。
+
+**子序列性质（引理）**
+
+#### 引理：
+如果 $v_1 \to v_2 \to \cdots \to v_{l+1}$ 是从 $v_1$ 到 $v_{l+1}$ 的最短路径，那么对于每一对 $i$，$j$，满足 $1 \leq i \leq j \leq l+1$，路径 $v_i \to v_{i+1} \to \cdots \to v_j$ 是从 $v_i$ 到 $v_j$ 的最短路径。
+
+#### 证明：
+- 假设 $v_1 \to v_2 \to \cdots \to v_{l+1}$ 是从 $v_1$ 到 $v_{l+1}$ 的最短路径，但是存在一条从 $v_i$ 到 $v_j$ 的更短路径（$i \leq j$）。
+- 我们可以用这条更短的路径替换原路径中的从 $v_i$ 到 $v_j$ 的部分，形成从 $v_1$ 到 $v_{l+1}$ 的新路径。
+- 这将与原假设矛盾，因为我们找到了一条更短的路径，违反了最短路径的定义。
+- 因此，$v_i \to v_{i+1} \to \cdots \to v_j$ 必须是从 $v_i$ 到 $v_j$ 的最短路径。
+
+---
+
+### Dijkstra 算法
+
+边松弛操作：
+
+- 对于每个顶点 $v \in V$，我们将维护一个值 $dist(v)$，表示从源顶点 $s$ 到顶点 $v$ 的当前最短路径长度。
+- 在算法结束时，我们确保每个 $dist(v)$ 等于从 $s$ 到 $v$ 的精确最短路径。
+- 算法中的核心操作称为 **边松弛（edge relaxation）**。给定一条边 $(u,v)$，我们按以下规则松弛它：
+  - 如果 $dist(v) < dist(u) + w(u, v)$，则不做任何操作；
+  - 否则，更新 $dist(v)$ 为 $dist(u) + w(u, v)$。
+
+1. **初始化**：
+   - 对于所有顶点 $v \in V$，设置 $parent(v) = \text{nil}$。
+   - 设置 $dist(s) = 0$，对于所有其他顶点 $v \in V$ 设置 $dist(v) = \infty$。
+   - 设置集合 $S = V$，表示未处理的顶点集合。
+
+2. **重复以下步骤，直到 $S$ 为空**：
+   - 从 $S$ 中移除 $dist(u)$ 最小的顶点 $u$。
+   - 对于 $u$ 的每条出边 $(u,v)$，执行松弛操作：
+     - 如果 $dist(v) > dist(u) + w(u,v)$，则更新 $dist(v) = dist(u) + w(u,v)$，并设置 $parent(v) = u$
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241224142230392.png" alt="image-20241224142230392" style="zoom:50%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241224142303248.png" alt="image-20241224142303248" style="zoom:50%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241224142442271.png" alt="image-20241224142442271" style="zoom:50%;" />
+
+**正确性和时间分析** 
+
+* It will be left as an exercise for you to prove that Dijkstra’s algorithm is correct
+
+* Just as equally instructive is an exercise for you to implement Dijkstra’s algorithm in O((|V|+|E|)*log|V|) time. Why?
+
+### Span Tree
+
+Remember that a tree is defined as a **connected undirected graph with no cycles**.
+
+* Given a connected undirected weighted graph (G,w) with G=(V,E), a spanning tree T is a tree satisfying the following conditions:
+  * The vertex set of T is V.
+  * Every edge of T is an edge of G.
+
+* The cost of T is defined as the sum of the weights of all 
+
+the edges in T (note that T must have |V|-1 edges)
+
+### 最小生成树（MST）
+
+- 给定一个连通的无向加权图 $G = (V, E)$，目标是找到一个生成树，其总权重最小。
+- 这样的树被称为 $G$ 的最小生成树（MST）。
+- 最小生成树不唯一：不同的最小生成树是可能的。
+
+---
+
+### Prim 算法：
+
+我们将讨论一个用于解决最小生成树问题的算法——**Prim 算法**。
+
+- 图 $G$ 存储在邻接表格式中。每条边 $\{u, v\}$ 被表示两次：一次放在 $v$ 的邻接表中，另一次放在 $u$ 的邻接表中。边的权重 $w(u, v)$ 存储在这两个位置。
+
+**Prim 算法的思路：**
+
+- 算法通过每次加入一个顶点来扩展生成树 $T_{\text{mst}}$。
+- 在任何时刻，顶点集 $V$ 被分为两部分：
+  - 已经在生成树中的顶点集合 $S$；
+  - 其余的顶点集合 $V \setminus S$。
+- 在算法结束时，$S = V$。
+- 如果一条边连接了 $S$ 中的一个顶点和 $V \setminus S$ 中的一个顶点，我们称其为**扩展边**。
+- 算法始终遵循以下**最轻扩展原则**：
+  - 对于每个顶点 $v \in V \setminus S$，记住其最轻扩展边（即具有最小权重的边），称为 $v$ 的最佳扩展边（$best\text{-}ext(v)$）。
+
+**具体步骤：**
+
+1. **初始化**：
+   - 选择一条权重最小的边 $\{u, v\}$。
+   - 设置 $S = \{u, v\}$，初始化生成树 $T_{\text{mst}}$，仅包含边 $\{u, v\}$。
+
+2. **最轻扩展原则**：
+   - 对于每个 $z \in V \setminus S$，如果：
+     - $z$ 是 $u$ 的邻接点，但不是 $v$ 的邻接点，$best\text{-}ext(z) = \{z, u\}$；
+     - $z$ 是 $v$ 的邻接点，但不是 $u$ 的邻接点，$best\text{-}ext(z) = \{z, v\}$；
+     - $z$ 是 $u$ 和 $v$ 的邻接点，$best\text{-}ext(z)$ 选择 $\{z, u\}$ 和 $\{z, v\}$ 中权重较小的一条边。
+
+3. **重复以下步骤，直到 $S = V$**：
+   - 获取一个扩展边 $\{u, v\}$，其权重最小。
+   - 将 $v$ 加入到 $S$ 中，并将边 $\{u, v\}$ 加入到生成树 $T_{\text{mst}}$ 中。
+   - 恢复最轻扩展原则：
+     - 对于 $v$ 的每条边 $\{v, z\}$：
+       - 如果 $z \notin S$ 且 $best\text{-}ext(z)$ 的权重大于边 $\{v, z\}$ 的权重，则更新 $best\text{-}ext(z) = \{v, z\}$。
+
+**时间复杂度:**
+
+- 算法的时间复杂度通常为 $O(|E| + |V| \log |V|)$，其中 $|V|$ 是顶点数，$|E|$ 是边数。
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241224143538538.png" alt="image-20241224143538538" style="zoom:50%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241224143711923.png" alt="image-20241224143711923" style="zoom:50%;" /><img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241224143744891.png" alt="image-20241224143744891" style="zoom:50%;" />
+
+<img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241224143828044.png" alt="image-20241224143828044" style="zoom:50%;" />
