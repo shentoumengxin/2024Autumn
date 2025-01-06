@@ -102,6 +102,10 @@ int (*arr)[3] 表示指向一个具有 3 列的整型数组的指针，即 arr �
 
    key word **new** to create a memory in the heap
 
+### Cpp 二维数组的理解
+
+二维数组用 `int *arr [20]=a[10][20]`来储存。换句话来说，这是一个指针，指向
+
 ## Loop 和 运算顺序（爱考）
 
 1. **前置和后置运算符：**
@@ -267,6 +271,41 @@ rvalue
 - 表达式的结果，例如 *a + b*。
 - 函数返回值（如果返回的是非引用类型）。
 
+**左值与右值的区别**
+
+| **属性**         | **左值（lvalue）**               | **右值（rvalue）**                 |
+| ---------------- | -------------------------------- | ---------------------------------- |
+| **存储**         | 有持久地址（指向内存中具体位置） | 无持久地址（通常是临时值）         |
+| **作用**         | 可出现在赋值操作的左侧           | 只能出现在赋值操作的右侧           |
+| **是否可取地址** | 可以使用 `&` 取地址              | 不能取地址                         |
+| **是否可引用**   | 可以用左值引用（`T&`）引用       | 可以用右值引用（`T&&`，C++11）引用 |
+| **生存期**       | 在作用域内持久存在               | 临时存在，仅在表达式计算时有效     |
+| **典型例子**     | 变量、数组元素、返回的左值引用   | 字面值、表达式的结果、临时对象     |
+
+
+
+#### **赋值中的左值和右值**
+
+```
+cpp复制代码int x = 10;  // x 是左值，10 是右值
+x = x + 5;   // x 是左值，x + 5 是右值
+```
+
+#### **函数中的左值和右值**
+
+```cpp
+int foo() {
+    return 42; // 42 是右值
+}
+
+int main() {
+    int x = foo(); // foo() 返回一个右值
+    int& lref = x; // 左值引用，可以绑定到左值 x
+    int&& rref = foo(); // 右值引用，可以绑定到右值
+    return 0;
+}
+```
+
 ## 参数的类型转换
 
 1. 精确匹配（Exact Match）
@@ -331,6 +370,22 @@ func(5); // int自动转换为MyClass类型
 
 如果函数要求严格的类型匹配，用户可以使用强制类型转换，例如 `static_cast`、`reinterpret_cast`、`const_cast` 等来进行精确转换。这种转换需要用户显式进行，编译器不会自动执行。
 
+
+
+## 常量指针 Const *
+
+| **声明**               | **含义**                                                     |
+| ---------------------- | ------------------------------------------------------------ |
+| `const int* ptr`       | 指针指向的数据是常量（不能通过指针修改数据），指针本身可以改变。 |
+| `int const* ptr`       | 同上，指针指向的数据是常量，指针本身可以改变。               |
+| `int* const ptr`       | 指针本身是常量（不能改变指针的值），指针指向的数据可以改变。 |
+| `const int* const ptr` | 指针本身是常量，指针指向的数据也是常量（既不能修改指针，也不能修改数据）。 |
+| `int* ptr`             | 指针和所指向的数据都可以改变（默认情况）。                   |
+
+**方法是从右向左解读指针**
+
+例如：`const int* ptr` → `ptr` 是指向 `const int` 的指针。
+
 ## Separate Compilation
 
 ### 编译过程概览：
@@ -362,6 +417,169 @@ func(5); // int自动转换为MyClass类型
 3. **源代码文件（Source Code File 2）**：包含**调用**结构体（类型）相关函数的代码。在这个文件中，通过调用结构体相关的函数来实现具体的程序功能。这部分代码通常是程序的主要逻辑代码，也以 `.cpp` 结尾。
 
 **函数不用heap或者stack进行储存，它在code区域**
+
+#### **函数指针的定义**
+
+- 函数指针用于存储函数的地址，通过函数指针可以调用函数。
+
+- 语法：
+
+  ```cpp
+  return_type (*pointer_name)(parameter_list);
+  ```
+
+#### **示例**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// 定义一个普通函数
+int add(int a, int b) {
+    return a + b;
+}
+
+int main() {
+    // 定义一个函数指针
+    int (*func_ptr)(int, int) = add;
+
+    // 通过函数指针调用函数
+    cout << "Result: " << func_ptr(2, 3) << endl; // 输出 5
+
+    return 0;
+}
+```
+
+------
+
+### **2. 函数指针的声明**
+
+#### **基本形式**
+
+```cpp
+return_type (*pointer_name)(parameter_list);
+```
+
+#### **示例**
+
+1. 指向无参数、无返回值函数的指针：
+
+   ```cpp
+   void (*func_ptr)();
+   ```
+
+2. 指向有参数、有返回值函数的指针：
+
+   ```cpp
+   int (*func_ptr)(int, double);
+   ```
+
+#### **初始化**
+
+- 函数指针可以通过函数名初始化，因为函数名是函数的地址。
+
+  ```
+  cpp
+  
+  
+  复制代码
+  int (*func_ptr)(int, int) = add;
+  ```
+
+------
+
+### **3. 函数指针的调用**
+
+#### **通过函数指针调用函数**
+
+- 直接调用：
+
+  ```cpp
+  
+  func_ptr(a, b);
+  ```
+
+- 使用解引用符号调用（等价）：
+
+  ```cpp
+  (*func_ptr)(a, b);
+  ```
+
+------
+
+### **4. 函数指针作为函数参数**
+
+#### **用途**
+
+函数指针可以作为参数传递给另一个函数，用于实现回调机制。
+
+#### **示例**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// 普通函数
+int add(int a, int b) {
+    return a + b;
+}
+
+// 使用函数指针作为参数
+void operate(int x, int y, int (*func)(int, int)) {
+    cout << "Result: " << func(x, y) << endl;
+}
+
+int main() {
+    operate(5, 3, add); // 将函数 add 的地址传递给 operate
+    return 0;
+}
+```
+
+**输出**：
+
+```
+makefile
+
+
+复制代码
+Result: 8
+```
+
+------
+
+### **5. 函数指针数组**
+
+#### **用途**
+
+- 可以存储多个具有相同参数和返回值类型的函数。
+- 通过下标选择不同的函数。
+
+#### **示例**
+
+```cpp
+#include <iostream>
+using namespace std;
+
+// 定义多个函数
+int add(int a, int b) { return a + b; }
+int subtract(int a, int b) { return a - b; }
+
+// 定义函数指针数组
+int (*func_ptrs[2])(int, int) = {add, subtract};
+
+int main() {
+    cout << "Add: " << func_ptrs[0](5, 3) << endl;       // 调用 add
+    cout << "Subtract: " << func_ptrs[1](5, 3) << endl; // 调用 subtract
+    return 0;
+}
+```
+
+**输出**：
+
+```makefile
+Add: 8
+Subtract: 2
+```
 
 ### 作用域（Scope）
 
@@ -411,22 +629,22 @@ func(5); // int自动转换为MyClass类型
 
 1. **外部链接（External Linkage）**：具有外部链接的名称可以在多个文件中共享。例如，全局变量和函数默认具有外部链接，通过 `extern` 关键字可以显式指定外部链接。
 
-   ```
+   ```cpp
    
    extern int sharedVar; // 可以在其他文件中共享的变量
    ```
    
 2. **内部链接（Internal Linkage）**：具有内部链接的名称只能在单个文件中共享，不能跨文件访问。通常使用 `static` 关键字声明具有内部链接的全局变量或函数。
 
-   ```
+   ```cpp
    
    static int fileVar = 5; // 仅在当前文件中可见
    ```
    
 3. **无链接（No Linkage）**：自动变量（函数内的局部变量）和块中的静态变量没有链接，意味着它们只能在其定义的块内访问，不能在文件的其他位置共享。
 
-   ```
-   cpp复制代码void func() {
+   ```cpp
+   void func() {
        int localVar = 10; // 没有链接
        static int staticVar = 5; // 静态局部变量，也没有链接
    }
@@ -531,6 +749,132 @@ export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH
 - **静态库**适合需要独立发布的应用，或对启动性能要求较高的情况。
 - **动态库**适合多个应用共享库资源的情况，或需要灵活更新的情况。
 
+
+
+### **Placement `new` 的使用**
+
+这段代码展示了 **C++ 中的 Placement `new` 运算符** 的功能，允许程序员在特定的内存位置上构造对象，而不是动态分配新的堆内存。这种方法对于内存管理非常灵活，但需要非常谨慎，因为它可能引发覆盖数据的问题。
+
+------
+
+### ****
+
+#### **1. 普通 `new` 和 Placement `new` 的区别**
+
+- **普通 `new`：**
+  - 从堆中分配内存并调用构造函数初始化。
+  - 例如：`pd1 = new double[N];` 从堆分配内存存储 `double` 数组。
+- **Placement `new`：**
+  - 在程序员提供的特定内存位置构造对象。
+  - 例如：`pd2 = new (buffer) double[N];` 将对象存储在数组 `buffer` 中。
+
+------
+
+#### **2. 第一部分：第一次调用**
+
+```cpp
+pd1 = new double[N]; // 从堆分配内存
+pd2 = new (buffer) double[N]; // 使用 buffer 数组分配内存
+```
+
+- `pd1` 使用 **普通 `new`** 从堆中分配内存。
+- `pd2` 使用 **Placement `new`**，将内存分配到静态数组 `buffer` 中。
+
+##### **内存内容**
+
+- `pd1` 的地址位于堆中（动态分配）。
+- `pd2` 的地址位于 `buffer` 数组中（静态分配）。
+
+##### **输出示例**
+
+```yaml
+Memory addresses:
+ heap: 0x55e2dfd8f570 static: 0x7ffcb3a9e810
+
+Memory contents, p1, p2:
+1000 at 0x55e2dfd8f570; 1000 at 0x7ffcb3a9e810
+1020 at 0x55e2dfd8f578; 1020 at 0x7ffcb3a9e818
+...
+```
+
+------
+
+#### **3. 第二部分：第二次调用**
+
+```cpp
+pd3 = new double[N];  // 普通 new，分配新的堆内存
+pd4 = new (buffer) double[N];  // 在 buffer 上重新分配，覆盖原有数据
+```
+
+- `pd3` 再次从堆中分配新的内存地址。
+- `pd4` 使用 `buffer`，但直接覆盖了之前 `pd2` 在 `buffer` 上的数据。
+
+##### **内存覆盖示例**
+
+- `pd4` 与 `pd2` 指向同一个内存位置（`buffer`），原来的数据被覆盖。
+
+##### **输出示例**
+
+```
+yaml复制代码Memory contents, p3, p4:
+1000 at 0x55e2dfd8f5a0; 1000 at 0x7ffcb3a9e810
+1040 at 0x55e2dfd8f5a8; 1040 at 0x7ffcb3a9e818
+...
+```
+
+**注意：**
+
+- 使用同一个 `buffer` 时，新分配的数据会覆盖之前的数据，这种行为是 Placement `new` 的特性之一。
+
+------
+
+#### **4. 第三部分：第三次调用**
+
+```
+cpp复制代码delete [] pd1;  // 释放 pd1 的内存
+pd1 = new double[N];  // 从堆重新分配内存
+pd2 = new (buffer + N * sizeof(double)) double[N];  // 在 buffer 后续位置分配
+```
+
+- `pd1` 再次从堆分配内存。
+- `pd2` 使用 `buffer` 数组的**下一个内存块**（`buffer + N * sizeof(double)`）存储数据，避免覆盖之前的数据。
+
+##### **内存分布**
+
+- `pd2` 不再与 `pd4` 使用同一个内存块，而是使用了 `buffer` 的下一个内存位置。
+
+##### **输出示例**
+
+```
+yaml复制代码Memory contents, p1, p2:
+1000 at 0x55e2dfd8f5c0; 1000 at 0x7ffcb3a9e838
+1060 at 0x55e2dfd8f5c8; 1060 at 0x7ffcb3a9e840
+...
+```
+
+
+
+#### **Placement `new` 的作用**
+
+- Placement `new` 用于在用户指定的内存位置上构造对象，而不是从堆动态分配。
+- 使用方式：`new (memory_address) Type(arguments);`
+
+#### **内存管理注意事项**
+
+1. 内存覆盖：
+   - 如果在同一内存块上多次调用 Placement `new`，会覆盖之前的数据。
+2. 手动释放内存：
+   - 使用普通 `new` 时，内存需要通过 `delete` 释放。
+   - Placement `new` 的内存由用户管理，不能使用 `delete`，只能调用显式析构函数（例如 `pd2->~double()`）。
+3. 灵活性：
+   - Placement `new` 适用于嵌入式系统或对内存分配有严格控制的场景。
+
+
+
+
+
+## 类与对象
+
 ### **二元运算符重载问题与友元函数的解决方案**
 
 
@@ -543,36 +887,33 @@ export LD_LIBRARY_PATH=/path/to/lib:$LD_LIBRARY_PATH
 
    - 例如：
 
-     ```
-     cpp
+     ```cpp
      
-     
-     复制代码
      Time Time::operator*(double multiplier) const;
      ```
-
+     
      在 
-
+     
      ```
      A * 2.75
      ```
-
+     
       中，
-
+     
      ```
      A
      ```
-
+     
       是调用对象（左操作数），会通过 
-
+     
      ```
      this
      ```
-
+     
       指针传递给成员函数。
-
+     
    - 如果左操作数是基本数据类型（如 `2.75`），显然无法用成员函数来处理，因为基本类型不能成为类的调用对象。
-
+   
 2. **非成员函数无法直接访问私有成员**：
 
    - 如果选择使用非成员函数来重载运算符，虽然可以处理左操作数不是类对象的情况，但非成员函数不能直接访问类的私有成员和受保护成员，导致操作受限。

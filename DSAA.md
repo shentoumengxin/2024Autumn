@@ -265,20 +265,16 @@ then we get $E(x)=O(nlogn) with (c=2)$
 
 - **适用范围**：适用于**元素值分布较为均匀的数组**，且元素可以映射到桶中。
 
-- 基本思想
-
-  ：
+- 基本思想：
 
   1. **分配桶**：根据元素值的分布，将元素分配到不同的桶中。
   2. **桶内排序**：对每个桶内的元素进行排序，可以使用任何稳定的排序算法。
   3. **合并结果**：依次遍历每个桶，合并桶内元素得到排序结果。
+  
+- 特点：
 
-- 特点
-
-  ：
-
-  - **平均线性时间复杂度**：在理想情况下，时间复杂度为 O(n)O(n)O(n)。
-  - **对数据分布敏感**：当数据分布不均匀时，桶排序的性能会下降。
+  - **平均线性时间复杂度**：在理想情况下，时间复杂度为 O(n)。
+- **对数据分布敏感**：当数据分布不均匀时，桶排序的性能会下降。
 
 
 
@@ -506,7 +502,7 @@ Rabin-Karp是一种字符串匹配算法，用于在文本`T`中查找模式`P`�
 
 
 
-### **Fast  State Automata**
+### **Fast  State Automate**
 
 ![image-20241105112321522](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241105112321522.png)
 
@@ -554,7 +550,7 @@ else // char mismatch
 **步骤 3：更新辅助变量 `X`**
 
 ```
- X ← 𝛿(X,P[j]) 
+ X ← 𝛿(X,P[j+1]) 
 ```
 
 - 这里，`X ← 𝛿(X, P[j+1])` 表示更新 `X` 为当前状态 `X` 在接收到模式串 `P[j]` 时的转移状态。这是为了在下一次处理字符时，能够继续参考之前已经匹配的部分。**(这里一定注意X是延后更新的，差行复制)**
@@ -602,21 +598,15 @@ KMP (Knuth-Morris-Pratt) 算法通过使用 **部分匹配表（`π` 数组）**
 
 4. **字符匹配**：
 
-   - `if P[q+1] = T[i]`
-
-     ：
-
+   - `if P[q+1] = T[i]`：
      - 如果当前文本字符 `T[i]` 与模式串的字符 `P[q+1]` 匹配，更新 `q`，表示模式串成功匹配了一个字符。
-
+     
    - **`q ← q + 1`**：增加 `q`，表示模式串向后推进一个字符，准备匹配下一个字符。
-
+   
 5. **模式串匹配成功**：
 
-   - `if q == m`
-
-     ：
-
-     - 当 `q == m` 时，表示模式串 `P` 已经完全匹配成功，打印匹配的位置。
+   - `if q == m`：
+  - 当 `q == m` 时，表示模式串 `P` 已经完全匹配成功，打印匹配的位置。
      - 打印结果：`print "Pattern occurs with shift" i - m`，即模式串的起始位置为 `i - m`，表示模式串 `P` 在文本 `T` 中的匹配位置。
 
 6. **回退继续搜索**：
@@ -838,7 +828,7 @@ postorderTraversalTwoStack(root):
 
 
 
-### Caculater
+### Caculator
 
 <img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241126105701267.png" alt="image-20241126105701267" style="zoom:60%;" />
 
@@ -1166,6 +1156,8 @@ function predecessorQuery(T, q):
 
 复杂度分析：case2 是O(n). case1 and case3 
 
+搜索树的平衡问题？参考b站视频。
+
 ## Graph
 
 ### Definition 
@@ -1179,7 +1171,7 @@ function predecessorQuery(T, q):
 
 * **Degree**  
   * In an undirected graph, the degree of vertex u is the  number of edges of u (2e)
-  *   In a directed graph, the out-degree of a vertex u is the  number of outgoing edges of u, and its in-degree is the  number of its incoming edges (e) (e)
+  *   In a directed graph, the out-degree of a vertex u is the  number of outgoing edges of u, and its in-degree is the  number of its incoming edges (e) 
 
 <img src="C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20241217104323178.png" alt="image-20241217104323178" style="zoom:50%;" />
 
@@ -1316,13 +1308,13 @@ DFS can be implemented efficiently as follows.
 
 **边的分类**
 
-在 DFS 树的构建过程中，我们不仅会访问图中的节点，还会处理图中的边。对于图中的每一条边 (u,v)(u, v)(u,v)，我们可以根据其在 DFS 中的行为将其分类为以下几种类型：
+在 DFS 树的构建过程中，我们不仅会访问图中的节点，还会处理图中的边。对于图中的每一条边 (u,v)，我们可以根据其在 DFS 中的行为将其分类为以下几种类型：
 
 1. **前向边（Forward Edge）**：
-   - 定义：如果u 是 v 在 DFS 树中的**祖先**（但不是父节点），则边 (u,v) 是 **前向边**。
+   - 定义：如果u 是 v 在 DFS 树中的**祖先**，则边 (u,v) 是 **前向边**。
    - 解释：即 u 已经是 v 的某个祖先，而不是直接的父节点。这类边通常出现在 DFS 树的深度优先遍历中，用于连接树中更深层次的节点。
 2. **回边（Backward Edge）**：
-   - 定义：如果 u 是 v 的**后代**（即 v 是 u 的祖先），则边 (u,v)是 **回边**。
+   - 定义：如果 u 是 v 的**后代**（即 v 是 u 的祖先（不是父亲）），则边 (u,v)是 **回边**。
    - 解释：回边指向树中的祖先节点，这种边通常用于检测图中的 **环**。如果存在回边，则图中存在环，因为回边表示我们从一个节点走到了其祖先节点。
 3. **横向边（Cross Edge）**：
    - 定义：如果边 (u,v) 既不是前向边，也不是回边，则它是 **横向边**。
