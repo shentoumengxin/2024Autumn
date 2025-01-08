@@ -1,0 +1,3 @@
+/home/zzh/CS219 Advanced Programming/lab9/build/CMakeFiles/CandyBar2.dir
+/home/zzh/CS219 Advanced Programming/lab9/build/CMakeFiles/edit_cache.dir
+/home/zzh/CS219 Advanced Programming/lab9/build/CMakeFiles/rebuild_cache.dir

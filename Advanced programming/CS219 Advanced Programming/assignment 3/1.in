@@ -1,0 +1,25 @@
+24
+mkdir -p ./this/is/a/folder
+mkdir -p ./this/is/a
+cat ./this/is/a/folder
+echo 'this is a file' > /this/is/a/folder
+rm ./this/is/a/folder
+cd ./this/is/a/folder
+cd notexist
+pwd
+echo 'this is a file' > /this/is/a/file
+cd /this/is/a/file
+cat /this/is/a/folder
+rm -r /this/is/a/file
+cd /
+mv /this/is/a/folder /this/is/a/file
+echo 'yet another file' > /this/is/also/a/file
+find /nowhere -name 'file'
+mv /this/is/a/file /nowhere
+rm -r /this/is/a
+cd ./this/is/a/folder
+cat /this/is/a/file
+mkdir -p ./MEP/LBZ/
+ls -a ./MEP/LBZ/../
+mkdir -p ./MEP/LBZ/XKW/ZVJ/WCB/
+rm -r ./MEP/LBZ/XKW/ZVJ/WCB/

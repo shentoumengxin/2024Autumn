@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/main.dir/main.cpp.o -o main  -Wl,-rpath,"/home/zzh/CS219 Advanced Programming/lab10/build" libliba.a liblibs.so 

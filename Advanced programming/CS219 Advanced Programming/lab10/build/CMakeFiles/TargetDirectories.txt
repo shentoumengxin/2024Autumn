@@ -1,0 +1,5 @@
+/home/zzh/CS219 Advanced Programming/lab10/build/CMakeFiles/liba.dir
+/home/zzh/CS219 Advanced Programming/lab10/build/CMakeFiles/libs.dir
+/home/zzh/CS219 Advanced Programming/lab10/build/CMakeFiles/main.dir
+/home/zzh/CS219 Advanced Programming/lab10/build/CMakeFiles/edit_cache.dir
+/home/zzh/CS219 Advanced Programming/lab10/build/CMakeFiles/rebuild_cache.dir
